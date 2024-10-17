@@ -183,7 +183,7 @@ else:
     if st.button('📤 Send', key='send_button'):
         if user_input and 'vectors' in st.session_state:
             # Log the user's question
-            st.session_state.chat_log.insert(0, ('user', user_input))
+            st.session_state.chat_log.append(('user', user_input))
             log_interaction(st.session_state.username, "user_question", user_input)
 
             # Display thinking animation
@@ -197,7 +197,7 @@ else:
             thinking_placeholder.empty()
 
             # Log and display the AI's response
-            st.session_state.chat_log.insert(0, ('bot', response))
+            st.session_state.chat_log.append(('bot', response))
             log_interaction(st.session_state.username, "ai_response", response)
             st.rerun()  # Rerun to update the chat interface
         elif 'vectors' not in st.session_state:
