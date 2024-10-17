@@ -66,6 +66,9 @@ def process_user_input(vector, user_input):
             Answer the questions based on the provided context only.
             Please provide the most accurate response based on the question.
             If anyone asks you about it means they are asking about the context you have.
+            If the user questions are out of your context you can give general asnwer and specify that it is 
+            not there in your context and also if that question is related to the context you have but that is not exactly present in your context you can relate them and 
+            give general asnwer.
             <context>
             {context}
             </context>
