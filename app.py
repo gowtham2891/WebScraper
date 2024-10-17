@@ -64,7 +64,8 @@ def process_user_input(vector, user_input):
         prompt = ChatPromptTemplate.from_template(
             """
             Answer the questions based on the provided context only.
-            Please provide the most accurate response based on the question
+            Please provide the most accurate response based on the question.
+            If anyone asks you about it means they are asking about the context you have.
             <context>
             {context}
             </context>
