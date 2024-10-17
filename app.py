@@ -201,7 +201,7 @@ else:
         elif not user_input:
             st.warning("⚠️ Please enter a question.")
 
-    # Display chat log
+    # Display chat log with recent chats on top
     st.markdown("### 📜 Chat History")
     for author, message in st.session_state.chat_log:
         if author == 'user':
