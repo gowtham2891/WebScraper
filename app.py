@@ -63,7 +63,7 @@ def process_user_input(vector, user_input):
         llm = ChatGroq(groq_api_key=groq_api_key, model_name="llama3-8b-8192")
         prompt = ChatPromptTemplate.from_template(
             """
-            Answer the questions based on the provided context only.
+            Answer the questions based on the provided context.
             Please provide the most accurate response based on the question.
             If anyone asks you about it means they are asking about the context you have.
             If the user questions are out of your context you can give general asnwer and specify that it is 
