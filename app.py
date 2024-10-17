@@ -84,6 +84,13 @@ def process_user_input(vector, user_input):
 # App configuration
 st.set_page_config(page_title="AI Chat Assistant", page_icon="🤖", layout="wide")
 
+# Add a header or disclaimer at the top
+st.markdown("""
+# AI Chat Assistant
+### Note: This application is proprietary, and the source code is not intended for public access. 
+If you need information or support, please reach out through the appropriate channels.
+""")
+
 # Custom CSS to style the chat
 st.markdown("""
 <style>
