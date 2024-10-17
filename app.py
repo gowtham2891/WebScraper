@@ -205,18 +205,18 @@ else:
         elif not user_input:
             st.warning("⚠️ Please enter a question.")
 
-    # Display chat log with question above and answer below
+    # Display chat log with the most recent interactions at the top
     st.markdown("### 📜 Chat History")
-    for i in range(0, len(st.session_state.chat_log), 2):  # Iterate in pairs (question-answer)
-        user_message = st.session_state.chat_log[i][1]  # User's question
-        bot_message = st.session_state.chat_log[i + 1][1] if i + 1 < len(st.session_state.chat_log) else ""  # AI's response
+    for i in range(len(st.session_state.chat_log) - 1, -1, -2):  # Iterate in reverse order, with steps of 2
+        user_message = st.session_state.chat_log[i - 1][1] if i - 1 >= 0 else ""  # User's question
+        bot_message = st.session_state.chat_log[i][1]  # AI's response
 
         # Display the question (user message) first
-        st.markdown(f"<div class='chat-message user-message'><strong>👤 You:</strong> {user_message}</div>", unsafe_allow_html=True)
+        if user_message:
+            st.markdown(f"<div class='chat-message user-message'><strong>👤 You:</strong> {user_message}</div>", unsafe_allow_html=True)
 
         # Display the answer (bot message) below the question
-        if bot_message:
-            st.markdown(f"<div class='chat-message bot-message'><strong>🤖 AI:</strong> {bot_message}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='chat-message bot-message'><strong>🤖 AI:</strong> {bot_message}</div>", unsafe_allow_html=True)
 
     # Clear chat button
     if st.button('🗑️ Clear Chat History', key='clear_button'):
