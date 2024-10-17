@@ -182,17 +182,21 @@ else:
 
     if st.button('📤 Send', key='send_button'):
         if user_input and 'vectors' in st.session_state:
+            # Log the user's question
             st.session_state.chat_log.insert(0, ('user', user_input))
             log_interaction(st.session_state.username, "user_question", user_input)
 
+            # Display thinking animation
             thinking_placeholder = st.empty()
             for i in range(3):
                 thinking_placeholder.markdown(f"<div class='thinking'>🤔 AI is thinking{'.' * (i+1)}</div>", unsafe_allow_html=True)
                 time.sleep(0.5)
 
+            # Get AI response
             response = process_user_input(st.session_state.vectors, user_input)
             thinking_placeholder.empty()
 
+            # Log and display the AI's response
             st.session_state.chat_log.insert(0, ('bot', response))
             log_interaction(st.session_state.username, "ai_response", response)
             st.rerun()  # Rerun to update the chat interface
@@ -201,13 +205,18 @@ else:
         elif not user_input:
             st.warning("⚠️ Please enter a question.")
 
-    # Display chat log with recent chats on top
+    # Display chat log with question above and answer below
     st.markdown("### 📜 Chat History")
-    for author, message in st.session_state.chat_log:
-        if author == 'user':
-            st.markdown(f"<div class='chat-message user-message'><strong>👤 You:</strong> {message}</div>", unsafe_allow_html=True)
-        else:
-            st.markdown(f"<div class='chat-message bot-message'><strong>🤖 AI:</strong> {message}</div>", unsafe_allow_html=True)
+    for i in range(0, len(st.session_state.chat_log), 2):  # Iterate in pairs (question-answer)
+        user_message = st.session_state.chat_log[i][1]  # User's question
+        bot_message = st.session_state.chat_log[i + 1][1] if i + 1 < len(st.session_state.chat_log) else ""  # AI's response
+
+        # Display the question (user message) first
+        st.markdown(f"<div class='chat-message user-message'><strong>👤 You:</strong> {user_message}</div>", unsafe_allow_html=True)
+
+        # Display the answer (bot message) below the question
+        if bot_message:
+            st.markdown(f"<div class='chat-message bot-message'><strong>🤖 AI:</strong> {bot_message}</div>", unsafe_allow_html=True)
 
     # Clear chat button
     if st.button('🗑️ Clear Chat History', key='clear_button'):
