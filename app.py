@@ -13,12 +13,28 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 import google.generativeai as genai
 import time
 from datetime import datetime
+import logging
 
 # Load environment variables
 load_dotenv()
 os.getenv("GOOGLE_API_KEY")
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 groq_api_key = os.environ['GROQ_API_KEY']
+
+# Set up logging to ensure logs are visible in the Streamlit Cloud logs section
+logging.basicConfig(
+    level=logging.INFO,  # Set log level to INFO
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.FileHandler("app.log"),  # Optional: Save logs to a file
+        logging.StreamHandler()  # Ensure logs are captured in Streamlit's log system
+    ]
+)
+
+# Function to log user interactions
+def log_interaction(username, interaction_type, content):
+    log_message = f"{datetime.now().isoformat()} - {username} - {interaction_type}: {content}"
+    logging.info(log_message)
 
 # Function to ensure URLs include https://
 def ensure_https(url):
@@ -38,7 +54,6 @@ def process_url(url):
         vector = FAISS.from_documents(documents, embeddings)
         return vector
     except Exception as e:
-        # Log error to terminal and provide a user-friendly message
         log_interaction("SYSTEM", "error", f"Error processing URL: {url}. Error: {e}")
         return None
 
@@ -63,28 +78,15 @@ def process_user_input(vector, user_input):
         result = response["answer"]
         return result
     except Exception as e:
-        # Log error to terminal and provide a user-friendly message
         log_interaction("SYSTEM", "error", f"Error processing user input. Error: {e}")
         return "⚠️ An error occurred while processing your request. Please try again."
-
-# Function to log user interactions in the terminal
-def log_interaction(username, interaction_type, content):
-    log_entry = {
-        "timestamp": datetime.now().isoformat(),
-        "username": username,
-        "type": interaction_type,
-        "content": content
-    }
-    # Print the log entry to the terminal, including URLs or other content
-    print(f"[{log_entry['timestamp']}] {log_entry['username']} - {log_entry['type']}: {log_entry['content']}")
 
 # App configuration
 st.set_page_config(page_title="AI Chat Assistant", page_icon="🤖", layout="wide")
 
-# Custom CSS to match the style from the image you uploaded
+# Custom CSS to style the chat
 st.markdown("""
 <style>
-    /* General styling for chat bubbles */
     .chat-message {
         padding: 10px;
         border-radius: 20px;
@@ -92,31 +94,23 @@ st.markdown("""
         font-family: Arial, sans-serif;
         max-width: 80%;
     }
-
-    /* User message styling */
     .user-message {
-        background-color: #007bff;  /* Blue background for user messages */
-        color: white;  /* White text for user messages */
-        text-align: right;  /* Align text to the right */
-        margin-left: auto;  /* Push user messages to the right */
+        background-color: #007bff;
+        color: white;
+        text-align: right;
+        margin-left: auto;
     }
-
-    /* AI message styling */
     .bot-message {
-        background-color: #f1f1f1;  /* Gray background for AI messages */
-        color: black;  /* Black text for AI messages */
-        text-align: left;  /* Align text to the left */
-        margin-right: auto;  /* Push AI messages to the left */
+        background-color: #f1f1f1;
+        color: black;
+        text-align: left;
+        margin-right: auto;
     }
-
-    /* Thinking placeholder styling */
     .thinking {
         color: #999999; 
         font-style: italic;
         text-align: center;
     }
-
-    /* Clear Chat button styling */
     .stButton>button {
         background-color: #007bff;
         color: white;
@@ -172,21 +166,17 @@ else:
 
     if st.button('📤 Send', key='send_button'):
         if user_input and 'vectors' in st.session_state:
-            # Log the user's question
             st.session_state.chat_log.insert(0, ('user', user_input))
             log_interaction(st.session_state.username, "user_question", user_input)
 
-            # Display thinking animation
             thinking_placeholder = st.empty()
             for i in range(3):
                 thinking_placeholder.markdown(f"<div class='thinking'>🤔 AI is thinking{'.' * (i+1)}</div>", unsafe_allow_html=True)
                 time.sleep(0.5)
 
-            # Get AI response
             response = process_user_input(st.session_state.vectors, user_input)
             thinking_placeholder.empty()
 
-            # Log and display the AI's response
             st.session_state.chat_log.insert(0, ('bot', response))
             log_interaction(st.session_state.username, "ai_response", response)
             st.rerun()  # Rerun to update the chat interface
