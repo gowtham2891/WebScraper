@@ -84,12 +84,21 @@ def process_user_input(vector, user_input):
 # App configuration
 st.set_page_config(page_title="AI Chat Assistant", page_icon="🤖", layout="wide")
 
-# Add a header or disclaimer at the top
+# Add a blank header to cover the GitHub icon and other elements
 st.markdown("""
-# AI Chat Assistant
-### Note: This application is proprietary, and the source code is not intended for public access. 
-If you need information or support, please reach out through the appropriate channels.
-""")
+<style>
+    header {
+        visibility: hidden;
+    }
+
+    /* Add a custom blank header to cover space */
+    .blank-header {
+        height: 60px;
+        background-color: white;  /* Match background color of the page */
+    }
+</style>
+<div class="blank-header"></div>
+""", unsafe_allow_html=True)
 
 # Custom CSS to style the chat
 st.markdown("""
